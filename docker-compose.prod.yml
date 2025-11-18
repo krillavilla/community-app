@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: garden_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - garden_network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: garden_backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH0_API_AUDIENCE: ${AUTH0_API_AUDIENCE}
+      AUTH0_ALGORITHMS: RS256
+      ML_SERVICE_URL: http://ml-service:8001
+      ML_API_KEY: ${ML_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - garden_network
+    restart: unless-stopped
+
+  ml-service:
+    build:
+      context: ./ml
+      dockerfile: Dockerfile
+    container_name: garden_ml
+    environment:
+      ML_API_KEY: ${ML_API_KEY}
+      MODEL_PATH: /app/storage/models
+      PORT: 8001
+    volumes:
+      - ml_models:/app/storage/models
+    networks:
+      - garden_network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: garden_frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    networks:
+      - garden_network
+    restart: unless-stopped
+
+networks:
+  garden_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  ml_models:
