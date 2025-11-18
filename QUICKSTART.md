@@ -72,14 +72,14 @@ VITE_AUTH0_REDIRECT_URI=http://localhost:5173
 
 ### 4. Start Services
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 **Wait ~30 seconds** for ML models to download on first run.
 
 ### 5. Initialize Database
 ```bash
-docker-compose exec backend python init_db.py
+docker compose exec backend python init_db.py
 ```
 
 ---
@@ -132,37 +132,37 @@ Open http://localhost in browser → Should see landing page
 ### View Logs
 ```bash
 # All services
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
-docker-compose logs -f backend
-docker-compose logs -f ml-service
-docker-compose logs -f frontend
+docker compose logs -f backend
+docker compose logs -f ml-service
+docker compose logs -f frontend
 ```
 
 ### Restart Services
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
 ### Stop Services
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Rebuild After Code Changes
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 ### Run Database Migrations
 ```bash
-docker-compose exec backend alembic upgrade head
+docker compose exec backend alembic upgrade head
 ```
 
 ### Access Database
 ```bash
-docker-compose exec postgres psql -U postgres garden_db
+docker compose exec postgres psql -U postgres garden_db
 ```
 
 ---
@@ -172,11 +172,11 @@ docker-compose exec postgres psql -U postgres garden_db
 ### Backend won't start
 ```bash
 # Check logs
-docker-compose logs backend
+docker compose logs backend
 
 # Common fixes:
 # 1. Database not ready - wait 10 seconds, then restart
-docker-compose restart backend
+docker compose restart backend
 
 # 2. Missing environment variables
 cat backend/.env  # Verify all vars are set
@@ -185,7 +185,7 @@ cat backend/.env  # Verify all vars are set
 ### ML Service slow to start
 ```bash
 # First run downloads ~90MB model - be patient
-docker-compose logs ml-service
+docker compose logs ml-service
 
 # Should see: "Model loaded successfully"
 ```
@@ -198,7 +198,7 @@ docker-compose logs ml-service
 ### Port conflicts
 ```bash
 # If port 80, 8000, or 8001 is in use:
-# Edit docker-compose.yml and change port mappings
+# Edit docker compose.yml and change port mappings
 # Example: "8080:80" instead of "80:80"
 ```
 
@@ -264,26 +264,26 @@ python -m uvicorn app.main:app --port 8001 --reload
 ### 1. Create Guardian User (for support)
 ```bash
 # In database
-docker-compose exec postgres psql -U postgres garden_db
+docker compose exec postgres psql -U postgres garden_db
 UPDATE users SET role = 'guardian' WHERE email = 'your@email.com';
 ```
 
 ### 2. Add Test Data
 ```bash
 # Run init_db.py multiple times for more seed data
-docker-compose exec backend python init_db.py
+docker compose exec backend python init_db.py
 ```
 
 ### 3. Monitor ML Service Performance
 ```bash
 # Check ML service logs for processing times
-docker-compose logs ml-service | grep "Processing time"
+docker compose logs ml-service | grep "Processing time"
 ```
 
 ### 4. Hot Reload in Development
 - **Backend**: Already enabled with `--reload`
 - **Frontend**: Vite dev server auto-reloads
-- **Docker**: Mount volumes for hot reload (see `docker-compose.override.yml`)
+- **Docker**: Mount volumes for hot reload (see `docker compose.override.yml`)
 
 ---
 
@@ -291,19 +291,19 @@ docker-compose logs ml-service | grep "Processing time"
 
 ### Check Status
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 ### Full Reset
 ```bash
 # WARNING: Deletes all data!
-docker-compose down -v
-docker-compose up -d
-docker-compose exec backend python init_db.py
+docker compose down -v
+docker compose up -d
+docker compose exec backend python init_db.py
 ```
 
 ### Report Issues
-- Check logs first: `docker-compose logs`
+- Check logs first: `docker compose logs`
 - Review documentation: `docs/`
 - Common issues: See Troubleshooting section above
 
