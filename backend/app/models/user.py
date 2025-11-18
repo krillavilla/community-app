@@ -76,9 +76,9 @@ class User(Base):
     last_active_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
     # Relationships
-    guide_profile = relationship("GuideProfile", back_populates="user", uselist=False)
-    guide_applications = relationship("GuideApplication", back_populates="user")
-    trust_applications = relationship("TrustVerificationApplication", back_populates="user")
+    guide_profile = relationship("GuideProfile", back_populates="user", uselist=False, foreign_keys="GuideProfile.user_id")
+    guide_applications = relationship("GuideApplication", back_populates="user", foreign_keys="GuideApplication.user_id")
+    trust_applications = relationship("TrustVerificationApplication", back_populates="user", foreign_keys="TrustVerificationApplication.user_id")
     
     # TODO: Add relationships to other models (habits, posts, etc.) as they are created
     
