@@ -60,3 +60,10 @@ docker-compose.override.yml
 .coverage
 htmlcov/
 coverage.xml
+
+# Documentation (keep only README.md)
+*.md
+!README.md
+!backend/README.md
+!frontend/README.md
+!ml-service/README.md
