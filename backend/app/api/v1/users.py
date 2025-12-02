@@ -7,6 +7,8 @@ from app.api.deps.db import get_db
 from app.api.deps.auth import get_current_user
 from app.models.user import User
 from app.schemas.user import UserResponse, UserUpdate
+from pydantic import BaseModel
+from datetime import date
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -66,3 +68,50 @@ async def get_user_profile(
         )
     
     return user
+
+
+class AgeVerificationRequest(BaseModel):
+    date_of_birth: str  # YYYY-MM-DD format
+
+
+@router.post("/me/verify-age")
+async def verify_age(
+    age_data: AgeVerificationRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Verify user's age (required before posting video content)
+    
+    Users must be at least 13 years old to use Garden.
+    Users under 18 have additional safety restrictions.
+    """
+    try:
+        dob = date.fromisoformat(age_data.date_of_birth)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid date format. Use YYYY-MM-DD"
+        )
+    
+    # Calculate age
+    today = date.today()
+    age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    
+    # COPPA compliance - minimum age 13
+    if age < 13:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You must be at least 13 years old to use Garden"
+        )
+    
+    # Update user
+    current_user.date_of_birth = dob
+    current_user.age_verified = True
+    db.commit()
+    
+    return {
+        "message": "Age verified successfully",
+        "is_minor": age < 18,
+        "age_verified": True
+    }

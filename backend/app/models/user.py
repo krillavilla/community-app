@@ -5,7 +5,7 @@ Includes User, GuideProfile, GuideApplication, and TrustVerificationApplication.
 """
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Boolean, DateTime, Text, ForeignKey, Integer, Enum as SQLEnum
+from sqlalchemy import Column, String, Boolean, DateTime, Text, ForeignKey, Integer, Enum as SQLEnum, Date
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import enum
@@ -48,7 +48,8 @@ class User(Base):
     
     # Auth0 authentication
     auth0_sub = Column(String(255), unique=True, nullable=False, index=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
+    # TODO: Email can be null for client credentials auth (machine-to-machine)
+    email = Column(String(255), unique=True, nullable=True, index=True)
     
     # Profile
     display_name = Column(String(100), nullable=False)
@@ -64,6 +65,13 @@ class User(Base):
     
     # Content preferences
     spiritual_opt_in = Column(Boolean, default=False, nullable=False)
+    
+    # Age verification (COPPA compliance)
+    date_of_birth = Column(Date, nullable=True)
+    age_verified = Column(Boolean, default=False, nullable=False)
+    
+    # GDPR soft delete
+    soft_deleted = Column(Boolean, default=False, nullable=False)
     
     # Metrics (TODO: compute from relationships in production)
     streak_days = Column(Integer, default=0, nullable=False)

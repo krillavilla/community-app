@@ -1,69 +1,194 @@
-"""Garden habit tracking Pydantic schemas."""
-from datetime import date, datetime
-from typing import Optional
+"""
+Pydantic schemas for Garden System API.
+
+Request and response models for seeds, vines, soil, and gardens.
+"""
+from datetime import datetime
+from typing import Optional, List
+from pydantic import BaseModel, Field
 from uuid import UUID
-from pydantic import Field
-from app.models.garden import HabitCategory, HabitFrequency
-from app.schemas.base import BaseSchema, IDMixin, TimestampMixin
 
 
-class HabitCreate(BaseSchema):
-    """Schema for creating a habit."""
-    name: str = Field(..., min_length=1, max_length=100)
-    description: Optional[str] = None
-    category: HabitCategory
-    frequency: HabitFrequency = HabitFrequency.DAILY
-    target_count: int = Field(default=1, ge=1)
-    reminder_time: Optional[str] = Field(None, pattern=r"^\d{2}:\d{2}$")
-    reminder_enabled: bool = False
+# Seed Schemas
+class SeedCreate(BaseModel):
+    """Request to plant a seed (create post)."""
+    content: Optional[str] = Field(None, max_length=5000, description="Caption text")
+    privacy_fence: str = Field("public", description="Privacy level: public, friends, close_friends, orchard, private")
 
 
-class HabitUpdate(BaseSchema):
-    """Schema for updating a habit."""
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
-    description: Optional[str] = None
-    category: Optional[HabitCategory] = None
-    frequency: Optional[HabitFrequency] = None
-    target_count: Optional[int] = Field(None, ge=1)
-    reminder_time: Optional[str] = Field(None, pattern=r"^\d{2}:\d{2}$")
-    reminder_enabled: Optional[bool] = None
-    is_active: Optional[bool] = None
+class SeedResponse(BaseModel):
+    """Seed response with full details."""
+    id: UUID
+    vine_id: UUID
+    content: Optional[str]
+    video_url: Optional[str]
+    thumbnail_url: Optional[str]
+    mux_playback_id: Optional[str]
+    
+    # Lifecycle
+    state: str
+    planted_at: datetime
+    sprouts_at: Optional[datetime]
+    wilts_at: Optional[datetime]
+    composted_at: Optional[datetime]
+    
+    # Growth metrics
+    water_level: int
+    nutrient_score: int
+    sunlight_hours: int
+    
+    # Garden location
+    garden_type: str
+    privacy_fence: str
+    soil_health: float
+    
+    # Computed
+    time_until_wilt: Optional[str] = None  # Human-readable
+    growth_score: Optional[float] = None
+    
+    class Config:
+        from_attributes = True
 
 
-class HabitResponse(BaseSchema, IDMixin, TimestampMixin):
-    """Habit response."""
-    name: str
-    description: Optional[str]
-    category: HabitCategory
-    frequency: HabitFrequency
-    target_count: int
-    reminder_time: Optional[str]
-    reminder_enabled: bool
-    is_active: bool
+class SeedSummary(BaseModel):
+    """Minimal seed info for feeds."""
+    id: UUID
+    vine_id: UUID
+    content: Optional[str]
+    mux_playback_id: Optional[str]
+    thumbnail_url: Optional[str]
+    state: str
+    water_level: int
+    nutrient_score: int
+    sunlight_hours: int
+    planted_at: datetime
+    wilts_at: Optional[datetime]
+    
+    class Config:
+        from_attributes = True
 
 
-class HabitLogCreate(BaseSchema):
-    """Schema for logging habit completion."""
-    completed_at: date
-    notes: Optional[str] = None
-    duration_minutes: Optional[int] = Field(None, ge=0)
-    quantity: Optional[int] = Field(None, ge=0)
-
-
-class HabitLogResponse(BaseSchema, IDMixin):
-    """Habit log response."""
-    habit_id: UUID
-    completed_at: date
-    notes: Optional[str]
-    duration_minutes: Optional[int]
-    quantity: Optional[int]
-    created_at: datetime
-
-
-class GardenResponse(BaseSchema, IDMixin, TimestampMixin):
-    """Garden response with habits."""
+# Vine Schemas
+class VineResponse(BaseModel):
+    """Vine profile response."""
+    id: UUID
     user_id: UUID
-    name: str
-    description: Optional[str]
-    is_public: bool
-    habits: list[HabitResponse] = []
+    
+    # Health
+    root_strength: float
+    soil_health: float
+    growth_stage: str
+    
+    # Activity
+    planted_at: datetime
+    last_watered_at: datetime
+    selected_paths: Optional[List[str]]
+    
+    # Stats
+    seeds_planted: int
+    soil_given: int
+    sunlight_received: int
+    
+    # Computed
+    days_since_planted: Optional[int] = None
+    needs_water: Optional[bool] = None
+    reputation_score: Optional[float] = None
+    
+    class Config:
+        from_attributes = True
+
+
+# Soil Schemas
+class SoilCreate(BaseModel):
+    """Request to add soil (comment)."""
+    content: str = Field(..., min_length=1, max_length=2000, description="Comment text")
+
+
+class SoilResponse(BaseModel):
+    """Soil response with full details."""
+    id: UUID
+    seed_id: UUID
+    vine_id: UUID
+    content: str
+    
+    # Nutrients
+    nutrient_score: int
+    nitrogen_count: int
+    toxin_count: int
+    
+    # Lifecycle
+    added_at: datetime
+    decays_at: Optional[datetime]
+    composted_at: Optional[datetime]
+    
+    # Computed
+    is_toxic: Optional[bool] = None
+    is_nourishing: Optional[bool] = None
+    
+    class Config:
+        from_attributes = True
+
+
+# Feed Schemas
+class FeedRequest(BaseModel):
+    """Request for feed data."""
+    skip: int = Field(0, ge=0, description="Pagination offset")
+    limit: int = Field(20, ge=1, le=100, description="Max results")
+
+
+class FeedResponse(BaseModel):
+    """Feed response with seeds."""
+    seeds: List[SeedSummary]
+    total: Optional[int] = None
+    has_more: bool = False
+
+
+# Action Schemas
+class WaterResponse(BaseModel):
+    """Response after watering seed."""
+    seed_id: UUID
+    water_level: int
+    message: str = "Seed watered"
+
+
+class SunlightResponse(BaseModel):
+    """Response after shining sunlight."""
+    seed_id: UUID
+    sunlight_hours: int
+    message: str = "Sunlight added"
+
+
+class VoteResponse(BaseModel):
+    """Response after voting on soil."""
+    soil_id: UUID
+    vote_type: str  # "nitrogen" or "toxin"
+    nutrient_score: int
+    message: str
+
+
+# Search Schemas
+class SearchRequest(BaseModel):
+    """Request for seed search."""
+    query: str = Field(..., min_length=1, max_length=100, description="Search query")
+    skip: int = Field(0, ge=0, description="Pagination offset")
+    limit: int = Field(20, ge=1, le=100, description="Max results")
+
+
+# Climate Schemas
+class ClimateReadingResponse(BaseModel):
+    """Climate reading response."""
+    id: UUID
+    measured_at: datetime
+    toxicity_level: float
+    growth_rate: float
+    drought_risk: float
+    pest_incidents: int
+    temperature: float
+    
+    # Computed
+    health_score: Optional[float] = None
+    is_healthy: Optional[bool] = None
+    needs_intervention: Optional[bool] = None
+    
+    class Config:
+        from_attributes = True

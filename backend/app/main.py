@@ -8,7 +8,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 
 # TODO: Import route modules as they are created
-from app.api.v1 import users, garden
+from app.api.v1 import users
+from app.api.v1.endpoints import gdpr
+
+from app.api.v1.endpoints import videos
+from app.api.v1.endpoints import comments
+
+# Garden System endpoints
+from app.api.v1.endpoints import seeds, gardens, soil, vines
+
+# MVP endpoints (simplified for user testing)
+from app.api.v1.endpoints import mvp_posts
 
 
 app = FastAPI(
@@ -52,7 +62,20 @@ async def health_check():
 
 # Register API v1 routers
 app.include_router(users.router, prefix=settings.API_V1_PREFIX)
-app.include_router(garden.router, prefix=settings.API_V1_PREFIX)
+app.include_router(gdpr.router, prefix=f"{settings.API_V1_PREFIX}/gdpr", tags=["gdpr"])
+
+# Garden System routes
+app.include_router(seeds.router, prefix=f"{settings.API_V1_PREFIX}/seeds", tags=["seeds"])
+app.include_router(gardens.router, prefix=f"{settings.API_V1_PREFIX}/gardens", tags=["gardens"])
+app.include_router(soil.router, prefix=f"{settings.API_V1_PREFIX}/soil", tags=["soil"])
+app.include_router(vines.router, prefix=f"{settings.API_V1_PREFIX}/vines", tags=["vines"])
+
+# MVP routes (for user testing - simplified social features)
+app.include_router(mvp_posts.router, prefix=f"{settings.API_V1_PREFIX}/mvp", tags=["mvp"])
+
+# Legacy video and comment routes
+app.include_router(videos.router, prefix=f"{settings.API_V1_PREFIX}/videos", tags=["videos"])
+app.include_router(comments.router, prefix=f"{settings.API_V1_PREFIX}/comments", tags=["comments"])
 
 # TODO: Register additional routers as they are created:
 # - flourish (community posts)

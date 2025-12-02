@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  expiration-worker:
+    build: ./backend
+    container_name: garden_expiration_worker
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        echo "Waiting for postgres..."
+        while ! pg_isready -h garden_postgres -U garden > /dev/null 2>&1; do
+            sleep 1
+        done
+        echo "PostgreSQL is ready!"
+        echo "Running expiration worker..."
+        python -m app.workers.expiration_worker
+    environment:
+      DATABASE_URL: postgresql://garden:garden@garden_postgres:5432/garden_db
+      PYTHONPATH: /app
+      PYTHONUNBUFFERED: "1"
+      # Dummy values - worker doesn't use auth
+      AUTH0_DOMAIN: "dummy.auth0.com"
+      AUTH0_API_AUDIENCE: "dummy-audience"
+      ML_API_KEY: "dummy-key"
+    networks:
+      - community-app_garden_network
+
+networks:
+  community-app_garden_network:
+    external: true

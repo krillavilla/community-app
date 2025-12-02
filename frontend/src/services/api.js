@@ -69,6 +69,7 @@ export const gardenApi = {
   logHabit: (habitId, data) => api.post(`/garden/habits/${habitId}/logs`, data),
 };
 
+
 // TODO: Add APIs for other features
 // - Flourish Feed
 // - The Orchard

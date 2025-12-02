@@ -1,0 +1,14 @@
+# Garden System Workers Crontab
+# Install with: docker exec backend crontab /app/crontab
+
+# Lifecycle Worker - Every 5 minutes
+# Transitions seeds through lifecycle states
+*/5 * * * * cd /app && python -m app.workers.lifecycle_worker >> /var/log/lifecycle.log 2>&1
+
+# Climate Worker - Every hour
+# Records community health snapshots
+0 * * * * cd /app && python -m app.workers.climate_worker >> /var/log/climate.log 2>&1
+
+# Compost Worker - Daily at 3am
+# Archives expired content and cleans up old data
+0 3 * * * cd /app && python -m app.workers.compost_worker >> /var/log/compost.log 2>&1

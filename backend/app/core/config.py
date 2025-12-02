@@ -30,6 +30,17 @@ class Settings(BaseSettings):
     ML_SERVICE_URL: str = Field(default="http://ml-service:8001", description="ML service base URL")
     ML_API_KEY: str = Field(..., description="ML service API key")
     
+    # R2 Storage
+    R2_ACCESS_KEY_ID: str = Field(default="", description="Cloudflare R2 access key ID")
+    R2_SECRET_ACCESS_KEY: str = Field(default="", description="Cloudflare R2 secret access key")
+    R2_ENDPOINT_URL: str = Field(default="", description="Cloudflare R2 endpoint URL")
+    R2_BUCKET_NAME: str = Field(default="garden-videos-prod", description="R2 bucket name")
+    R2_PUBLIC_URL: str = Field(default="", description="R2 public URL")
+    
+    # Mux Video
+    MUX_TOKEN_ID: str = Field(default="", description="Mux token ID")
+    MUX_TOKEN_SECRET: str = Field(default="", description="Mux token secret")
+    
     # CORS
     CORS_ORIGINS: List[str] = Field(
         default=["http://localhost", "http://localhost:3000"],

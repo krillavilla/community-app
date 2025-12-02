@@ -12,6 +12,7 @@ from app.config import settings
 from app.services.embeddings import embedding_service
 from app.services.recommendations import recommendation_service
 from app.services.moderation import moderation_service
+from app.services.garden_ml import garden_ml_service
 
 # API key security
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
@@ -272,6 +273,119 @@ async def find_similar_users(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"User similarity search failed: {str(e)}"
+        )
+
+
+# ============================================
+# Garden System ML Endpoints
+# ============================================
+
+@app.post("/api/ml/garden/pollination")
+async def calculate_pollination(
+    request: Dict[str, Any],
+    api_key: str = Security(verify_api_key)
+):
+    """
+    Calculate pollination similarity for seed recommendations.
+    
+    Returns similar seeds based on content embeddings.
+    """
+    try:
+        seed_content = request.get("seed_content")
+        seed_embedding = request.get("seed_embedding")
+        candidate_seeds = request.get("candidate_seeds", [])
+        
+        similarities = garden_ml_service.calculate_pollination_similarity(
+            seed_content=seed_content,
+            seed_embedding=seed_embedding,
+            candidate_seeds=candidate_seeds
+        )
+        
+        return {
+            "seed_content": seed_content,
+            "similarities": [
+                {"seed_id": seed_id, "similarity": score}
+                for seed_id, score in similarities
+            ],
+            "count": len(similarities)
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Pollination calculation failed: {str(e)}"
+        )
+
+
+@app.post("/api/ml/garden/extract-embedding")
+async def extract_seed_embedding(
+    request: Dict[str, Any],
+    api_key: str = Security(verify_api_key)
+):
+    """
+    Extract embedding from seed content.
+    
+    Called by compost worker when archiving seeds.
+    """
+    try:
+        seed_content = request.get("seed_content")
+        
+        embedding = garden_ml_service.extract_seed_embedding(seed_content)
+        
+        return {
+            "seed_content": seed_content,
+            "embedding": embedding,
+            "dimension": len(embedding)
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Embedding extraction failed: {str(e)}"
+        )
+
+
+@app.post("/api/ml/garden/soil-health")
+async def score_soil_health(
+    request: Dict[str, Any],
+    api_key: str = Security(verify_api_key)
+):
+    """
+    Score vine soil health based on voting patterns.
+    
+    Detects toxic/spam behavior from vote history.
+    """
+    try:
+        vine_vote_history = request.get("vine_vote_history", [])
+        
+        health_metrics = garden_ml_service.score_soil_health(vine_vote_history)
+        
+        return health_metrics
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Soil health scoring failed: {str(e)}"
+        )
+
+
+@app.post("/api/ml/garden/climate-anomalies")
+async def detect_climate_anomalies(
+    request: Dict[str, Any],
+    api_key: str = Security(verify_api_key)
+):
+    """
+    Detect anomalies in climate readings.
+    
+    Flags sudden spikes in toxicity, drought, or pests.
+    """
+    try:
+        recent_readings = request.get("recent_readings", [])
+        
+        anomalies = garden_ml_service.detect_climate_anomalies(recent_readings)
+        
+        return anomalies
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Climate anomaly detection failed: {str(e)}"
         )
 
 

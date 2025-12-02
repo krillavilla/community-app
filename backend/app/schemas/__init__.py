@@ -17,12 +17,19 @@ from app.schemas.user import (
     TrustVerificationReview
 )
 from app.schemas.garden import (
-    HabitCreate,
-    HabitUpdate,
-    HabitResponse,
-    HabitLogCreate,
-    HabitLogResponse,
-    GardenResponse
+    SeedCreate,
+    SeedResponse,
+    SeedSummary,
+    VineResponse,
+    SoilCreate,
+    SoilResponse,
+    FeedRequest,
+    FeedResponse,
+    WaterResponse,
+    SunlightResponse,
+    VoteResponse,
+    SearchRequest,
+    ClimateReadingResponse
 )
 
 __all__ = [
@@ -42,11 +49,18 @@ __all__ = [
     "TrustVerificationApplicationCreate",
     "TrustVerificationApplicationResponse",
     "TrustVerificationReview",
-    # Garden
-    "HabitCreate",
-    "HabitUpdate",
-    "HabitResponse",
-    "HabitLogCreate",
-    "HabitLogResponse",
-    "GardenResponse",
+    # Garden System
+    "SeedCreate",
+    "SeedResponse",
+    "SeedSummary",
+    "VineResponse",
+    "SoilCreate",
+    "SoilResponse",
+    "FeedRequest",
+    "FeedResponse",
+    "WaterResponse",
+    "SunlightResponse",
+    "VoteResponse",
+    "SearchRequest",
+    "ClimateReadingResponse",
 ]

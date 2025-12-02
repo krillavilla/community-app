@@ -76,6 +76,9 @@ class FlourishPost(Base):
     author = relationship("User", backref="flourish_posts")
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
     reactions = relationship("Reaction", back_populates="post", cascade="all, delete-orphan")
+
+    mux_asset_id = Column(String(255), nullable=True)
+    mux_playback_id = Column(String(255), nullable=True)
     
     def __repr__(self):
         return f"<FlourishPost {self.id} by User {self.author_id}>"
@@ -96,6 +99,7 @@ class Comment(Base):
     post_id = Column(UUID(as_uuid=True), ForeignKey("flourish_posts.id"), nullable=False)
     author_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     parent_comment_id = Column(UUID(as_uuid=True), ForeignKey("comments.id"), nullable=True)
+
     
     # Content
     content = Column(Text, nullable=False)
@@ -116,6 +120,9 @@ class Comment(Base):
     author = relationship("User", backref="comments")
     parent_comment = relationship("Comment", remote_side=[id], backref="replies")
     reactions = relationship("Reaction", back_populates="comment", cascade="all, delete-orphan")
+
+    mux_asset_id = Column(String(255), nullable=True)
+    mux_playback_id = Column(String(255), nullable=True)
     
     def __repr__(self):
         return f"<Comment {self.id} by User {self.author_id}>"
@@ -147,6 +154,9 @@ class Reaction(Base):
     user = relationship("User", backref="reactions")
     post = relationship("FlourishPost", back_populates="reactions")
     comment = relationship("Comment", back_populates="reactions")
+
+    mux_asset_id = Column(String(255), nullable=True)
+    mux_playback_id = Column(String(255), nullable=True)
     
     def __repr__(self):
         return f"<Reaction {self.reaction_type} by User {self.user_id}>"

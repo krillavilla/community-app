@@ -100,6 +100,44 @@ from app.models.report import (
     ReportContentType
 )
 
+# Garden System models
+from app.models.seed import (
+    Seed,
+    SeedState,
+    GardenType,
+    FenceType
+)
+
+from app.models.vine import (
+    Vine,
+    VineGrowth
+)
+
+from app.models.soil import (
+    Soil
+)
+
+from app.models.nutrient import (
+    Nutrient,
+    NutrientType
+)
+
+from app.models.fence import (
+    Fence
+)
+
+from app.models.root import (
+    Root
+)
+
+from app.models.pollination_event import (
+    PollinationEvent
+)
+
+from app.models.climate_reading import (
+    ClimateReading
+)
+
 __all__ = [
     # User
     "User",
@@ -167,4 +205,18 @@ __all__ = [
     "ReportReason",
     "ReportStatus",
     "ReportContentType",
+    # Garden System
+    "Seed",
+    "SeedState",
+    "GardenType",
+    "FenceType",
+    "Vine",
+    "VineGrowth",
+    "Soil",
+    "Nutrient",
+    "NutrientType",
+    "Fence",
+    "Root",
+    "PollinationEvent",
+    "ClimateReading",
 ]
