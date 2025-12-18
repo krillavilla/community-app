@@ -37,28 +37,6 @@ Garden is a mental health and personal growth social platform that combines:
 
 ---
 
-## 🏗️ Tech Stack
-
-### Frontend
-- React 18 + Vite
-- TailwindCSS
-- Auth0 React SDK
-- Axios
-
-### Backend
-- FastAPI (Python 3.11)
-- PostgreSQL / SQLite
-- SQLAlchemy ORM
-- Alembic migrations
-- Auth0 JWT validation
-
-### Infrastructure
-- Docker + Docker Compose
-- Cloudflare R2 (video storage)
-- Mux (video encoding - planned)
-
----
-
 ## 🚀 Quick Start
 
 ### Prerequisites
