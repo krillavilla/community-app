@@ -1,0 +1,7 @@
+# Default owner for everything in the repo
+* @krillavilla
+
+# Optional: finer-grained ownership (uncomment if you want)
+# /frontend/ @krillavilla
+# /backend/  @krillavilla
+# /ml-service/ @krillavilla
