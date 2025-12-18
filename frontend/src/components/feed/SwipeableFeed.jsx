@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { Link } from 'react-router-dom';
 import { mvpAPI } from '../../services/mvpAPI';
 
 // Create Post Modal Component
@@ -10,12 +11,13 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
   const [videoFile, setVideoFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const fileInputRef = useRef(null);
+  const recordVideoRef = useRef(null); // For recording new video
+  const uploadVideoRef = useRef(null); // For uploading existing video
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!caption.trim() && !videoFile) {
-      setError('Please add a caption or video');
+      setError('Please add a message or video');
       return;
     }
 
@@ -38,6 +40,19 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
     }
   };
 
+  const handleVideoSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setVideoFile(file);
+    }
+  };
+
+  const clearVideo = () => {
+    setVideoFile(null);
+    if (recordVideoRef.current) recordVideoRef.current.value = '';
+    if (uploadVideoRef.current) uploadVideoRef.current.value = '';
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -52,27 +67,65 @@ function CreatePostModal({ isOpen, onClose, onPostCreated }) {
           <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="What's on your mind?"
+            placeholder="How are you doing today?"
             className="w-full h-32 bg-slate-700 text-white rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
             maxLength={500}
           />
 
-          <div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={(e) => setVideoFile(e.target.files[0])}
-              accept="video/*"
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full py-3 border-2 border-dashed border-slate-600 rounded-lg text-slate-400 hover:border-emerald-500 hover:text-emerald-400 transition"
-            >
-              {videoFile ? `📹 ${videoFile.name}` : '📹 Add Video (optional)'}
-            </button>
-          </div>
+          {/* Video Section */}
+          {videoFile ? (
+            <div className="bg-slate-700 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-emerald-400 text-sm truncate flex-1">
+                  🎬 {videoFile.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={clearVideo}
+                  className="text-red-400 hover:text-red-300 ml-2 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              {/* Record New Video - opens camera */}
+              <input
+                type="file"
+                ref={recordVideoRef}
+                onChange={handleVideoSelect}
+                accept="video/*"
+                capture="user"
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => recordVideoRef.current?.click()}
+                className="flex-1 py-4 bg-slate-700 hover:bg-slate-600 rounded-xl text-white transition flex flex-col items-center gap-2"
+              >
+                <span className="text-2xl">+</span>
+                <span className="text-xs text-slate-400">Record Video</span>
+              </button>
+
+              {/* Upload Existing Video */}
+              <input
+                type="file"
+                ref={uploadVideoRef}
+                onChange={handleVideoSelect}
+                accept="video/*"
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => uploadVideoRef.current?.click()}
+                className="flex-1 py-4 bg-slate-700 hover:bg-slate-600 rounded-xl text-white transition flex flex-col items-center gap-2"
+              >
+                <span className="text-2xl">📁</span>
+                <span className="text-xs text-slate-400">Upload Video</span>
+              </button>
+            </div>
+          )}
 
           <div className="flex items-center gap-4">
             <span className="text-slate-300">Privacy:</span>
@@ -161,8 +214,8 @@ function CommentsPanel({ postId, isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
-      <div className="w-full max-w-lg bg-slate-800 rounded-t-2xl max-h-[70vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+      <div className="w-full max-w-lg bg-slate-800 rounded-2xl max-h-[80vh] flex flex-col shadow-2xl">
         <div className="flex justify-between items-center p-4 border-b border-slate-700">
           <h3 className="text-lg font-semibold text-white">Comments</h3>
           <button onClick={onClose} className="text-slate-400 hover:text-white text-2xl">&times;</button>
@@ -237,9 +290,8 @@ function PostCard({ post, onLike, onOpenComments }) {
           </div>
           <span className="font-medium text-white">{post.author_name}</span>
         </a>
-        <span className="text-sm text-amber-400 font-medium">
-          ⏱️ {post.hours_remaining?.toFixed(1) || '?'}h left
-        </span>
+        {/* TODO: Timer hidden for cleaner UX - can be re-enabled in settings */}
+        {/* Timer is tracked internally but not shown to avoid pressure */}
       </div>
 
       {/* Video */}
@@ -258,20 +310,23 @@ function PostCard({ post, onLike, onOpenComments }) {
       )}
 
       {/* Actions */}
+      {/* TODO: Consider adding animation feedback on water/nurture actions */}
       <div className="flex justify-around p-3 border-t border-slate-700">
         <button
           onClick={() => onLike(post.id)}
+          title="Water this seed to help it grow"
           className={`flex items-center gap-2 px-4 py-2 rounded-full transition ${post.is_liked ? 'text-blue-400 bg-blue-900/30' : 'text-slate-300 hover:bg-slate-700'}`}
         >
-          💧 <span>{post.like_count}</span>
+          💧 Water <span>{post.like_count}</span>
         </button>
         <button
           onClick={() => onOpenComments(post.id)}
+          title="Add nutrients with a thoughtful comment"
           className="flex items-center gap-2 px-4 py-2 rounded-full text-slate-300 hover:bg-slate-700 transition"
         >
-          💬 <span>{post.comment_count}</span>
+          🌱 Nurture <span>{post.comment_count}</span>
         </button>
-        <span className="flex items-center gap-2 px-4 py-2 text-slate-400">
+        <span className="flex items-center gap-2 px-4 py-2 text-slate-400" title="Views">
           👁️ <span>{post.view_count}</span>
         </span>
       </div>
@@ -345,14 +400,14 @@ export default function SimpleFeed() {
               onClick={() => setShowCreatePost(true)}
               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-medium text-sm"
             >
-              + Post
+              🌱 Plant
             </button>
-            <a
-              href="/profile"
+            <Link
+              to="/profile"
               className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-full font-medium text-sm"
             >
               Profile
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -368,12 +423,15 @@ export default function SimpleFeed() {
 
         {posts.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-slate-400 text-lg mb-4">No posts yet!</p>
+            {/* TODO: Consider adding subtle animation to the seed icon */}
+            <span className="text-6xl mb-4 block">🌱</span>
+            <p className="text-emerald-400 text-xl font-medium mb-2">Your garden is waiting</p>
+            <p className="text-slate-400 text-sm mb-6">Plant the first seed and watch it grow</p>
             <button
               onClick={() => setShowCreatePost(true)}
               className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-medium"
             >
-              Create the first post
+              🌱 Plant a Seed
             </button>
           </div>
         ) : (
@@ -401,6 +459,15 @@ export default function SimpleFeed() {
         isOpen={!!selectedPostForComments}
         onClose={() => setSelectedPostForComments(null)}
       />
+
+      {/* Floating Action Button - always visible for quick post creation */}
+      <button
+        onClick={() => setShowCreatePost(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg shadow-emerald-900/50 flex items-center justify-center text-2xl transition-transform hover:scale-110 active:scale-95 z-30"
+        title="Plant a new seed"
+      >
+        +
+      </button>
     </div>
   );
 }

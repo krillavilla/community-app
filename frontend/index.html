@@ -4,10 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Garden</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading state while JS initializes -->
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f172a;color:white;font-family:system-ui">
+        Loading Garden...
+      </div>
+    </div>
+    <script>
+      // Global error handler to show errors on mobile
+      window.onerror = function(msg, url, line, col, error) {
+        document.getElementById('root').innerHTML = 
+          '<div style="padding:20px;background:#0f172a;color:white;min-height:100vh;font-family:system-ui">' +
+          '<h2 style="color:#f87171">Error</h2>' +
+          '<p>' + msg + '</p>' +
+          '<p style="color:#94a3b8;font-size:12px">' + url + ':' + line + '</p>' +
+          '</div>';
+        return false;
+      };
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -126,7 +126,7 @@ docker-compose exec backend alembic upgrade head
 
 **Garden is in active development!** Contributions are welcome:
 
-- 🐛 Report bugs via [Issues](https://github.com/YOUR_USERNAME/community-app/issues)
+- 🐛 Report bugs via [Issues](https://github.com/krillavilla/community-app/issues)
 - 💡 Suggest features
 - 🔧 Submit pull requests
 
@@ -142,16 +142,14 @@ docker-compose exec backend alembic upgrade head
 
 ## 💖 Support Development
 
-Garden is built by an independent developer seeking to create healthier social spaces. If you believe in this mission:
+Garden is built by an independent developer rebuilding his career while caring for his newborn son. If you believe in creating healthier social spaces:
 
 - ⭐ Star this repo
 - 🐦 Share on social media
-- ☕ [Buy me a coffee](YOUR_KOFI_LINK) (helps cover server costs)
+- ☕ [Support on Ko-fi](https://ko-fi.com/krillavilla)
+- 💜 [GitHub Sponsors](https://github.com/sponsors/krillavilla)
 
-**Where donations go**:
-- $15-25/mo: Cloud hosting (R2, PostgreSQL)
-- $20/mo: API costs (Auth0, AI tools)
-- Future: Mobile app development
+**Where donations go**: Cloud hosting, API costs, and development tools.
 
 ---
 
@@ -199,9 +197,8 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ## 📞 Contact
 
-- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/community-app/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/community-app/discussions)
-- **Email**: your.email@example.com
+- **Issues**: [GitHub Issues](https://github.com/krillavilla/community-app/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/krillavilla/community-app/discussions)
 
 ---
 

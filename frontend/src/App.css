@@ -2,6 +2,92 @@
   min-height: 100vh;
 }
 
+/* Landing page animations - peaceful, organic flow */
+@keyframes slow-pan {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes slow-pan-reverse {
+  0% {
+    background-position: 100% 30%;
+  }
+  50% {
+    background-position: 0% 70%;
+  }
+  100% {
+    background-position: 100% 30%;
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slow-pan {
+  animation: slow-pan 60s ease-in-out infinite;
+}
+
+.animate-slow-pan-reverse {
+  animation: slow-pan-reverse 80s ease-in-out infinite;
+}
+
+.animate-breathe {
+  animation: breathe 8s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease-out forwards;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -27,6 +113,16 @@
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slow-pan,
+  .animate-slow-pan-reverse,
+  .animate-breathe,
+  .animate-float {
+    animation: none;
   }
 }
 
