@@ -128,3 +128,4 @@ temp/
 !frontend/README.md
 !ml-service/README.md
 !docs/*.md
+deploy_mvp.sh
