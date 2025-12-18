@@ -125,6 +125,7 @@ Garden is built by an independent developer rebuilding his career while caring f
 - ⭐ Star this repo
 - 🐦 Share on social media
 - ☕ [Support on Ko-fi](https://ko-fi.com/krillavilla)
+- ☕ Alternate: https://buymeacoffee.com/krillavilla
 - 💜 [GitHub Sponsors](https://github.com/sponsors/krillavilla)
 
 **Where donations go**: Cloud hosting, API costs, and development tools.
