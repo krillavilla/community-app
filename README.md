@@ -3,7 +3,7 @@
 > A positive-focused social video platform with ephemeral content and privacy-first design
 
 [![Status](https://img.shields.io/badge/status-mvp-yellow)]() 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]()
 
 ---
@@ -46,7 +46,7 @@ Garden is a mental health and personal growth social platform that combines:
 ### 1. Clone & Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/community-app.git
+git clone https://github.com/krillavilla/community-app.git
 cd community-app
 ```
 
@@ -161,7 +161,7 @@ Garden takes privacy seriously:
 
 ## 📜 License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
+This project is licensed under the GNU AGPL-3.0 - see [LICENSE](LICENSE) for details.
 
 ---
 
